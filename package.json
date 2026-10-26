@@ -1,0 +1,80 @@
+{
+  "name": "bulkit-cli",
+  "version": "0.0.1",
+  "description": "The official command-line interface for Bulkit — schedule and publish social media posts from your terminal, scripts and CI.",
+  "keywords": [
+    "bulkit",
+    "cli",
+    "social-media",
+    "scheduling",
+    "publishing",
+    "social-media-scheduler",
+    "post-scheduler",
+    "twitter",
+    "x",
+    "linkedin",
+    "instagram",
+    "facebook",
+    "threads",
+    "tiktok",
+    "youtube",
+    "pinterest",
+    "reddit",
+    "bluesky"
+  ],
+  "homepage": "https://bulkit.io",
+  "bugs": "https://github.com/bulkit-io/bulkit-cli/issues",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bulkit-io/bulkit-cli.git"
+  },
+  "license": "MIT",
+  "author": "Bulkit <support@bulkit.io>",
+  "type": "module",
+  "bin": {
+    "bulkit": "./dist/bin.js"
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsdown",
+    "dev": "tsdown --watch",
+    "start": "node dist/bin.js",
+    "typecheck": "tsc --noEmit",
+    "lint": "biome check .",
+    "lint:fix": "biome check --write .",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage",
+    "check:package": "publint --strict",
+    "check": "pnpm lint && pnpm typecheck && pnpm test && pnpm build && pnpm check:package",
+    "changeset": "changeset",
+    "version": "changeset version && node scripts/sync-version.mjs",
+    "release": "pnpm build && changeset publish",
+    "prepublishOnly": "pnpm check"
+  },
+  "engines": {
+    "node": ">=22.12"
+  },
+  "packageManager": "pnpm@11.8.0",
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
+  },
+  "dependencies": {
+    "@commander-js/extra-typings": "15.0.0",
+    "bulkit": "^0.1.1",
+    "commander": "15.0.0"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "2.6.2",
+    "@changesets/cli": "3.0.3",
+    "@types/node": "^22.20.5",
+    "@vitest/coverage-v8": "5.0.5",
+    "publint": "0.3.25",
+    "tsdown": "0.23.1",
+    "typescript": "7.0.2",
+    "vitest": "5.0.5"
+  }
+}
