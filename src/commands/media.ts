@@ -9,7 +9,7 @@ import { Command } from '@commander-js/extra-typings';
 import type { MediaItem } from 'bulkit';
 import type { Context } from '../context';
 import { CliError, UsageError } from '../errors';
-import { formatBytes, formatDate, plural } from '../format';
+import { formatBytes, formatDate, plural, positiveInt } from '../format';
 import type { MakeContext } from './shared';
 
 /** Video above this size goes through a multipart upload session instead of one request. */
@@ -38,10 +38,26 @@ export function mediaCommand(context: MakeContext) {
   media
     .command('list')
     .alias('ls')
-    .description('List the workspace’s media library')
-    .action(async (_opts, cmd) => {
+    .description('List the workspace’s media library, newest first')
+    .option('-L, --limit <n>', 'how many files to show', positiveInt, 25)
+    .option('--all', 'show every file (ignores --limit)')
+    .action(async (opts, cmd) => {
       const ctx = context(cmd);
-      const list = await (await ctx.client()).media.list();
+      const client = await ctx.client();
+      const first = await client.media.list({
+        limit: opts.all ? 100 : Math.min(opts.limit, 100),
+      });
+      const list: MediaItem[] = [];
+      let more = false;
+      for await (const page of first.iterPages()) {
+        const room = opts.all ? page.data.length : opts.limit - list.length;
+        list.push(...page.data.slice(0, room));
+        if (!opts.all && list.length >= opts.limit) {
+          more = page.data.length > room || page.hasNextPage();
+          break;
+        }
+      }
+      if (more) ctx.out.info(`Showing the newest ${list.length}. Use --all for every file.`);
       ctx.out.print(list, () => {
         const human = ctx.out.isInteractive;
         ctx.out.table(

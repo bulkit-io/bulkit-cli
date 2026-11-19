@@ -517,6 +517,50 @@ describe('posts list', () => {
   });
 });
 
+describe('media list', () => {
+  const item = (id: string) => ({
+    id,
+    fileName: `${id}.png`,
+    mimeType: 'image/png',
+    size: 4,
+    createdAt: '2026-10-26T00:00:00.000Z',
+  });
+  const routes = {
+    'GET /media': (req: { query: URLSearchParams }) => {
+      const cursor = req.query.get('cursor');
+      const page = cursor ? [item('med_3')] : [item('med_1'), item('med_2')];
+      return { body: { data: page, nextCursor: cursor ? null : 'c2', hasMore: !cursor } };
+    },
+  };
+
+  it('reads the paged library and stops at --limit', async () => {
+    const r = await cli(['media', 'list', '-L', '2', '--json'], { ...auth, routes });
+    expect(r.code).toBe(0);
+    expect(JSON.parse(r.stdout).map((m: { id: string }) => m.id)).toEqual(['med_1', 'med_2']);
+    expect(r.requests).toHaveLength(1);
+    expect(r.requests[0]?.query.get('limit')).toBe('2');
+  });
+
+  it('says when --limit leaves files out', async () => {
+    const cut = await cli(['media', 'list', '-L', '1'], { ...auth, routes });
+    expect(cut.code).toBe(0);
+    expect(cut.stderr).toContain('Use --all');
+    const whole = await cli(['media', 'list', '-L', '5'], { ...auth, routes });
+    expect(whole.stderr).not.toContain('Use --all');
+  });
+
+  it('walks every page with --all', async () => {
+    const r = await cli(['media', 'list', '--all', '--json'], { ...auth, routes });
+    expect(r.code).toBe(0);
+    expect(JSON.parse(r.stdout).map((m: { id: string }) => m.id)).toEqual([
+      'med_1',
+      'med_2',
+      'med_3',
+    ]);
+    expect(r.requests.map((q) => q.query.get('cursor'))).toEqual([null, 'c2']);
+  });
+});
+
 describe('media upload', () => {
   const uploadedFile = (requests: { path: string; body: unknown }[]) => {
     const upload = requests.find((q) => q.path === '/media');
