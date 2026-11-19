@@ -44,13 +44,20 @@ export function mediaCommand(context: MakeContext) {
     .action(async (opts, cmd) => {
       const ctx = context(cmd);
       const client = await ctx.client();
-      const list: MediaItem[] = [];
-      for await (const item of client.media.list({
+      const first = await client.media.list({
         limit: opts.all ? 100 : Math.min(opts.limit, 100),
-      })) {
-        list.push(item);
-        if (!opts.all && list.length >= opts.limit) break;
+      });
+      const list: MediaItem[] = [];
+      let more = false;
+      for await (const page of first.iterPages()) {
+        const room = opts.all ? page.data.length : opts.limit - list.length;
+        list.push(...page.data.slice(0, room));
+        if (!opts.all && list.length >= opts.limit) {
+          more = page.data.length > room || page.hasNextPage();
+          break;
+        }
       }
+      if (more) ctx.out.info(`Showing the newest ${list.length}. Use --all for every file.`);
       ctx.out.print(list, () => {
         const human = ctx.out.isInteractive;
         ctx.out.table(

@@ -541,6 +541,14 @@ describe('media list', () => {
     expect(r.requests[0]?.query.get('limit')).toBe('2');
   });
 
+  it('says when --limit leaves files out', async () => {
+    const cut = await cli(['media', 'list', '-L', '1'], { ...auth, routes });
+    expect(cut.code).toBe(0);
+    expect(cut.stderr).toContain('Use --all');
+    const whole = await cli(['media', 'list', '-L', '5'], { ...auth, routes });
+    expect(whole.stderr).not.toContain('Use --all');
+  });
+
   it('walks every page with --all', async () => {
     const r = await cli(['media', 'list', '--all', '--json'], { ...auth, routes });
     expect(r.code).toBe(0);
