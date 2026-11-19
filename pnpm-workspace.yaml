@@ -1,3 +1,2 @@
 minimumReleaseAgeExclude:
-  - bulkit@0.1.1
-  - bulkit@0.2.0
+  - bulkit@0.1.1 || 0.2.0
