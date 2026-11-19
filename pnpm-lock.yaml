@@ -11,8 +11,8 @@ importers:
         specifier: 15.0.0
         version: 15.0.0(commander@15.0.0)
       bulkit:
-        specifier: ^0.1.1
-        version: 0.1.1
+        specifier: ^0.2.0
+        version: 0.2.0
       commander:
         specifier: 15.0.0
         version: 15.0.0
@@ -893,10 +893,10 @@ packages:
         integrity: sha512-kFL68AG6ajd8fg248zwM9GQrUWEp79gsmjum34OEXjs4yHuUMZfYKwOLW9GMmB4oNvVrj+EAGxsP7ye2UR9UlA==,
       }
 
-  bulkit@0.1.1:
+  bulkit@0.2.0:
     resolution:
       {
-        integrity: sha512-Uxfsk+Vk9JxrU7MiJJRT/2Zo1tsooXbiRLCCGP4DrxG5RLdUFhmShDqk+u1kkXnxkP48Pg4D+jCDawWxQQhNsA==,
+        integrity: sha512-sR2VkMVfAflOnfoi5z8OjoX5BLXpMa3sWSf1dYyOhv5NkAeBqVxCLh1q+wRbEfJqyPTU7UdY0eCR7x4z3yUWBQ==,
       }
     engines: { node: ">=22" }
 
@@ -1974,7 +1974,7 @@ snapshots:
       estree-walker: 3.0.3
       js-tokens: 10.0.0
 
-  bulkit@0.1.1: {}
+  bulkit@0.2.0: {}
 
   cac@7.1.0: {}
 
